@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Composting Stats</title>
+</head>
+<body>
+  <h2>Hello {{ current_user.name }}!</h2>
+
+  <h3>Your Stats</h3>
+  <ul>
+    <li><strong>Total composted:</strong> {{ user_total }} lbs</li>
+    <li><strong>This week:</strong> {{ user_week }} lbs</li>
+    <li><strong>This month:</strong> {{ user_month }} lbs</li>
+  </ul>
+
+  <h3>Community Impact</h3>
+  <ul>
+    <li><strong>Total composted by all users:</strong> {{ community_total }} lbs</li>
+  </ul>
+
+  <br>
+  <a href="/log">Log Compost</a> |
+  <a href="/history">View History</a> |
+  <a href="/logout">Logout</a>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Compost History</title>
+</head>
+<body>
+  <h2>Your Compost Drop-Off History</h2>
+  <ul>
+    {% for log in logs %}
+      <li>{{ log.timestamp.strftime('%Y-%m-%d %H:%M') }} — {{ log.weight }} lbs</li>
+    {% endfor %}
+  </ul>
+  <br>
+  <a href="/log">Log Another</a>
+  <a href="/stats">View My Composting Stats</a>
+</body>
+</html>

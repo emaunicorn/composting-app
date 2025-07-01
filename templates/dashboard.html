@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Welcome, {{ current_user.name }}!</h1>
+    <p>What would you like to do today?</p>
+    <ul>
+        <li><a href="/log">Log Compost</a></li>
+        <li><a href="/history">View Your Composting History</a></li>
+        <li><a href="/stats">View Your Stats</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+</body>
+</html>
