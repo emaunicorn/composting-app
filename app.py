@@ -1,5 +1,5 @@
 # ======= IMPORTS ========
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
     LoginManager, UserMixin, login_user,
@@ -10,7 +10,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
-from sqlalchemy import func
+from sqlalchemy import func, and_
 import os
 
 # ======= APP SETUP ========
@@ -54,6 +54,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
     compost_logs = db.relationship('CompostDropoff', backref='user', lazy=True)
+    is_admin = db.Column(db.Boolean, default=False)
     confirmed = db.Column(db.Boolean, default=False)
 
 class CompostDropoff(db.Model):
@@ -63,12 +64,6 @@ class CompostDropoff(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # Link to User table
 
 # ======= ROUTES ========
-
-# Home route
-@app.route("/")
-def home():
-    return render_template("home.html")
-
 
 # Signup route
 @app.route("/signup", methods=["GET", "POST"])
@@ -119,7 +114,7 @@ def confirm_email(token):
         db.session.commit()
         return '''
             <h3>Your account has been confirmed ✅</h3>
-            <p><a href="/">Click here to return to the homepage</a></p>
+            <p><a href="/dashboard">Click here to return to the homepage</a></p>
         '''    
     return "Account not found."
 
@@ -195,14 +190,76 @@ def reset_password(token):
 @login_required
 def logout():
     logout_user()
-    return redirect("/")
+    return redirect("/dashboard")
 
 
 # Dashboard route
 @app.route("/dashboard")
-@login_required
 def dashboard():
     return render_template("dashboard.html")
+
+# Admid dashboard route
+from flask import request, render_template
+from sqlalchemy import func, and_
+
+@app.route("/admin-dashboard")
+@login_required
+def admin_dashboard():
+    # Ensure only admin users can access this page
+    if not current_user.is_authenticated or not current_user.is_admin:
+        return "Unauthorized", 403
+
+    # --- Get filter parameters from query string ---
+    start_date = request.args.get("start_date", "")
+    end_date = request.args.get("end_date", "")
+    user_email = request.args.get("user_email", "")
+    min_weight = request.args.get("min_weight", "")
+    max_weight = request.args.get("max_weight", "")
+
+    filters = []
+
+    # Filter by date range
+    if start_date:
+        filters.append(CompostDropoff.timestamp >= datetime.strptime(start_date, "%Y-%m-%d"))
+    if end_date:
+        filters.append(CompostDropoff.timestamp <= datetime.strptime(end_date, "%Y-%m-%d"))
+
+    # Filter by user email
+    if user_email:
+        user = User.query.filter_by(email=user_email).first()
+        if user:
+            filters.append(CompostDropoff.user_id == user.id)
+
+    # Filter by weight range
+    if min_weight:
+        filters.append(CompostDropoff.weight >= float(min_weight))
+    if max_weight:
+        filters.append(CompostDropoff.weight <= float(max_weight))
+
+    # Query filtered logs
+    logs = CompostDropoff.query.filter(and_(*filters)).order_by(CompostDropoff.timestamp.desc()).all()
+
+    # Summary stats
+    total_weight = round(sum(log.weight for log in logs), 2)
+    user_ids = set(log.user_id for log in logs)
+    user_count = len(user_ids)
+    average_per_user = round(total_weight / user_count, 2) if user_count > 0 else 0
+
+    users = User.query.all()
+
+    return render_template(
+        "admin_dashboard.html",
+        logs=logs,
+        users=users,
+        start_date=start_date,
+        end_date=end_date,
+        selected_user_email=user_email,
+        min_weight=min_weight,
+        max_weight=max_weight,
+        total_weight=total_weight,
+        user_count=user_count,
+        average_per_user=average_per_user
+    )
 
 
 # Log compost route

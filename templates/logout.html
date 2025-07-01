@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <title>Common Roots Composting</title>
 </head>
@@ -13,9 +13,6 @@
       <li><a href="/history">View History</a></li>
       <li><a href="/stats">View Stats</a></li>
       <li><a href="/logout">Logout</a></li>
-      {% if current_user.is_admin %}
-        <li><a href="/admin-dashboard">Go to Admin Dashboard</a></li>
-      {% endif %}
     </ul>
   {% else %}
     <p>This is a community composting tracker. Sign up or log in to start tracking your food waste contributions and see your environmental impact!</p>

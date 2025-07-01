@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <a href="/dashboard">Return home</a><br>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+</head>
+<body>
+  <h1>Admin Dashboard</h1>
+
+  <form method="get">
+    <label>Start date: <input type="date" name="start_date" value="{{ start_date }}"></label>
+    <label>End date: <input type="date" name="end_date" value="{{ end_date }}"></label>
+    <label>User:
+      <select name="user_email">
+        <option value="">All</option>
+        {% for user in users %}
+          <option value="{{ user.email }}" {% if user.email == selected_user_email %}selected{% endif %}>
+            {{ user.name }} ({{ user.email }})
+          </option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Min weight: <input type="number" name="min_weight" step="0.1" value="{{ min_weight }}"></label>
+    <label>Max weight: <input type="number" name="max_weight" step="0.1" value="{{ max_weight }}"></label>
+    <button type="submit">Filter</button>
+  </form>
+
+  <hr>
+
+  <h2>Summary</h2>
+  <ul>
+    <li><strong>Total composted:</strong> {{ total_weight }} lbs</li>
+    <li><strong>Unique users:</strong> {{ user_count }}</li>
+    <li><strong>Average per user:</strong> {{ average_per_user }} lbs</li>
+  </ul>
+
+  <button onclick="downloadCSV()">Export CSV</button>
+
+  <hr>
+
+  <h2>Logs</h2>
+  <table id="logTable" class="display">
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Email</th>
+        <th>Weight (lbs)</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for log in logs %}
+        <tr>
+          <td>{{ log.user.name }}</td>
+          <td>{{ log.user.email }}</td>
+          <td>{{ "%.2f"|format(log.weight) }}</td>
+          <td>{{ log.timestamp.strftime('%Y-%m-%d') }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <script>
+    $(document).ready(function () {
+      $('#logTable').DataTable();
+    });
+
+    function downloadCSV() {
+      const rows = [["User", "Email", "Weight (lbs)", "Date"]];
+
+      {% for log in logs %}
+        rows.push([
+          {{ log.user.name|tojson }},
+          {{ log.user.email|tojson }},
+          {{ "%.2f"|format(log.weight)|tojson }},
+          {{ log.timestamp.strftime('%Y-%m-%d')|tojson }}
+        ]);
+      {% endfor %}
+
+
+      const csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "compost_logs.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
