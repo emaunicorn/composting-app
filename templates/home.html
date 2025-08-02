@@ -1,22 +1,21 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Common Roots Composting</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
   <h1>Welcome to Common Roots Composting</h1>
 
   {% if current_user.is_authenticated %}
-    <p>Hi {{ current_user.name }}! You’re logged in.</p>
-    <ul>
-      <li><a href="/log">Log Compost</a></li>
-      <li><a href="/history">View History</a></li>
-      <li><a href="/stats">View Stats</a></li>
-      <li><a href="/logout">Logout</a></li>
+    <p class="text-lg mb-4">Hi {{ current_user.name }}! You’re logged in.</p>
+    <ul class="space-y-2">
+      <li><a href="/log" class="text-blue-600 hover:underline">Log Compost</a></li>
+      <li><a href="/history" class="text-blue-600 hover:underline">View History</a></li>
+      <li><a href="/stats" class="text-blue-600 hover:underline">View Stats</a></li>
+      <li><a href="/logout" class="text-blue-600 hover:underline">Logout</a></li>
     </ul>
   {% else %}
-    <p>This is a community composting tracker. Sign up or log in to start tracking your food waste contributions and see your environmental impact!</p>
-    <a href="/login">Log In</a> or <a href="/signup">Sign Up</a>
+    <p class="text-gray-700 mb-4">
+      This is a community composting tracker. Sign up or log in to start tracking your food waste contributions and see your environmental impact!
+    </p>
+    <a href="/login" class="text-blue-600 hover:underline">Log In</a> or 
+    <a href="/signup" class="text-blue-600 hover:underline">Sign Up</a>
   {% endif %}
-</body>
-</html>
+{% endblock %}

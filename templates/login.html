@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Log In</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Log In - Common Roots Composting{% endblock %}
+
+{% block content %}
   <h2>Log In</h2>
 
   {% if error %}
@@ -17,7 +16,5 @@
   </form>
 
   <a href="/signup">Need an account?</a><br>
-  <a href="/forgot-password">Forgot your password?</a><br>
-  <a href="/dashboard">Home</a>
-</body>
-</html>
+  <a href="/forgot-password">Forgot your password?</a>
+{% endblock %}

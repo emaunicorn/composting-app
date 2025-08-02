@@ -1,22 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Common Roots Composting</title>
-</head>
-<body>
-  <h1>Welcome to Common Roots Composting</h1>
+{% extends "base.html" %}
 
-  {% if current_user.is_authenticated %}
-    <p>Hi {{ current_user.name }}! You’re logged in.</p>
-    <ul>
-      <li><a href="/log">Log Compost</a></li>
-      <li><a href="/history">View History</a></li>
-      <li><a href="/stats">View Stats</a></li>
-      <li><a href="/logout">Logout</a></li>
-    </ul>
-  {% else %}
-    <p>This is a community composting tracker. Sign up or log in to start tracking your food waste contributions and see your environmental impact!</p>
-    <a href="/login">Log In</a> or <a href="/signup">Sign Up</a>
-  {% endif %}
-</body>
-</html>
+{% block content %}
+  <h1>You’ve been logged out</h1>
+  <p class="mt-4">Thank you for composting with us.</p>
+  <a href="/" class="text-blue-600 hover:underline">Return Home</a>
+{% endblock %}

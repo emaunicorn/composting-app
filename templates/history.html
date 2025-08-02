@@ -1,18 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Compost History</title>
-</head>
-<body>
-  <h2>Your Compost Drop-Off History</h2>
-  <ul>
-    {% for log in logs %}
-      <li>{{ log.timestamp.strftime('%Y-%m-%d %H:%M') }} — {{ log.weight }} lbs</li>
-    {% endfor %}
-  </ul>
-  <br>
-  <a href="/log">Log Another</a> |
-  <a href="/stats">View My Composting Stats</a> |
-  <a href="/dashboard">Return home</a><br>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}History - Common Roots Composting{% endblock %}
+
+{% block content %}
+  <h2>Compost Log History</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Weight (lbs)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for log in logs %}
+        <tr>
+          <td>{{ log.timestamp.strftime('%Y-%m-%d') }}</td>
+          <td>{{ '%.2f'|format(log.weight) }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

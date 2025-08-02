@@ -1,4 +1,5 @@
 # ======= IMPORTS ========
+# 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
 from flask import Flask, render_template, request, redirect, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
@@ -267,12 +268,18 @@ def admin_dashboard():
 @login_required
 def log():
     if request.method == "POST":
-        weight = float(request.form["weight"])
-        new_log = CompostDropoff(weight=weight, user_id=current_user.id)
-        db.session.add(new_log)
-        db.session.commit()
-        return redirect("/history")
+        try:
+            weight = float(request.form["weight"])
+            if weight <= 0:
+                raise ValueError("Weight must be a positive number.")
+            new_log = CompostLog(user_id=current_user.id, weight=weight)
+            db.session.add(new_log)
+            db.session.commit()
+            return render_template("log.html", success="Compost logged successfully!")
+        except ValueError as e:
+            return render_template("log.html", error=str(e))
     return render_template("log.html")
+
 
 
 # Composting history route
