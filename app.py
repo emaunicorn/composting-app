@@ -271,7 +271,7 @@ def log():
             weight = float(request.form["weight"])
             if weight <= 0:
                 raise ValueError("Weight must be a positive number.")
-            new_log = CompostLog(user_id=current_user.id, weight=weight)
+            new_log = log(user_id=current_user.id, weight=weight)
             db.session.add(new_log)
             db.session.commit()
             return render_template("log.html", success="Compost logged successfully!")
