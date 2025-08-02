@@ -65,6 +65,12 @@ class CompostDropoff(db.Model):
 
 # ======= ROUTES ========
 
+# Home route
+@app.route("/")
+def home():
+    return render_template("dashboard.html")
+
+
 # Signup route
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
