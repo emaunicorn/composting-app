@@ -1,5 +1,4 @@
 # ======= IMPORTS ========
-# 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
 from flask import Flask, render_template, request, redirect, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
