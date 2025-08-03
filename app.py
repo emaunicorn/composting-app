@@ -70,6 +70,20 @@ class CompostDropoff(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # Link to User table
 
+# ======= GRANTING ADMIN POWER =======
+@app.before_first_request
+def assign_admins():
+    admin_emails = [
+        "andersonmeve@gmail.com",
+        "ethananderson@commonrootscomposting.org"
+    ]
+    for email in admin_emails:
+        user = User.query.filter_by(email=email).first()
+        if user and not user.is_admin:
+            user.is_admin = True
+            db.session.commit()
+
+
 # ======= ROUTES ========
 
 # Home route
@@ -99,6 +113,13 @@ def signup():
             new_user = User(name=name, email=email, password=hashed_pw, address=address, confirmed=False)
             db.session.add(new_user)
             db.session.commit()
+
+            # 🔐 Make certain users admin right after signup
+            if email in ["andersonmeve@gmail.com", "ethananderson@commonrootscomposting.org"]:
+                user = User.query.filter_by(email=email).first()
+                user.is_admin = True
+                db.session.commit()
+
 
             # ✅ Then send confirmation email
             token = s.dumps(email, salt='email-confirm')
