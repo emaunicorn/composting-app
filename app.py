@@ -165,7 +165,7 @@ def forgot_password():
         user = User.query.filter_by(email=email).first()
         if user:
             token = s.dumps(email, salt='password-reset')
-            reset_url = f"http://127.0.0.1:5000/reset-password/{token}"
+            reset_url = url_for('reset_password', token=token, _external=True)
             msg = Message("Reset Your Composting Account Password", recipients=[email])
             msg.body = f"Click the link to reset your password: {reset_url}"
             mail.send(msg)
