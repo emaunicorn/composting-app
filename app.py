@@ -71,7 +71,7 @@ class CompostDropoff(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # Link to User table
 
 # ======= GRANTING ADMIN POWER =======
-@app.before_first_request
+@app.before_request
 def assign_admins():
     admin_emails = [
         "andersonmeve@gmail.com",
