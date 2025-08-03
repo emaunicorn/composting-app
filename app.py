@@ -1,5 +1,5 @@
 # ======= IMPORTS ========
-from flask import Flask, render_template, request, redirect, abort
+from flask import Flask, render_template, request, redirect, abort, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
     LoginManager, UserMixin, login_user,
@@ -12,6 +12,9 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from sqlalchemy import func, and_
 import os
+import sys
+sys.path.append(os.path.dirname(__file__))
+
 
 # ======= APP SETUP ========
 app = Flask(__name__)
@@ -19,6 +22,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///compost.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 load_dotenv()  # Load environment variables from .env
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SERVER_NAME'] = 'commonrootscomposting.org'
+app.config['PREFERRED_URL_SCHEME'] = 'https'
+
 
 # ======= EMAIL SETUP =======
 # Mail config (use your own email if not Gmail)
@@ -49,6 +55,7 @@ def load_user(user_id):
 # ======= MODELS ========
 
 class User(db.Model, UserMixin):
+    address = db.Column(db.String(250), nullable=True)
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
@@ -80,6 +87,7 @@ def signup():
         name = request.form["name"]
         email = request.form["email"]
         password = request.form["password"]
+        address = request.form.get("address")
 
         if not name or not email or not password:
             error = "Please fill out all fields."
@@ -88,13 +96,13 @@ def signup():
         else:
             hashed_pw = generate_password_hash(password, method='pbkdf2:sha256')
             # ✅ Create user first, with confirmed=False
-            new_user = User(name=name, email=email, password=hashed_pw, confirmed=False)
+            new_user = User(name=name, email=email, password=hashed_pw, address=address, confirmed=False)
             db.session.add(new_user)
             db.session.commit()
 
             # ✅ Then send confirmation email
             token = s.dumps(email, salt='email-confirm')
-            confirm_url = f"http://127.0.0.1:5000/confirm/{token}"
+            confirm_url = url_for('confirm_email', token=token, _external=True)
             msg = Message("Confirm Your Composting Account", recipients=[email])
             msg.body = f"Hi {name}, please confirm your account by clicking this link: {confirm_url}"
             mail.send(msg)
@@ -277,7 +285,8 @@ def log():
             weight = float(request.form["weight"])
             if weight <= 0:
                 raise ValueError("Weight must be a positive number.")
-            new_log = log(user_id=current_user.id, weight=weight)
+            
+            new_log = CompostDropoff(user_id=current_user.id, weight=weight)
             db.session.add(new_log)
             db.session.commit()
             return render_template("log.html", success="Compost logged successfully!")
