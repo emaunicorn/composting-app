@@ -22,7 +22,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///compost.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 load_dotenv()  # Load environment variables from .env
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-app.config['SERVER_NAME'] = None
+# app.config['SERVER_NAME'] = None
 app.config['PREFERRED_URL_SCHEME'] = 'https'
 
 
@@ -87,9 +87,9 @@ def signup():
         name = request.form["name"]
         email = request.form["email"]
         password = request.form["password"]
-        address = request.form.get("address")
+        address = request.form["address"]
 
-        if not name or not email or not password:
+        if not name or not email or not password or not address:
             error = "Please fill out all fields."
         elif User.query.filter_by(email=email).first():
             error = "An account with that email already exists."
