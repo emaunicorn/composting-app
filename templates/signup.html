@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Log In - Common Roots Composting{% endblock %}
+{% block title %}Sign Up - Common Roots Composting{% endblock %}
 
 {% block content %}
-  <h2>Log In</h2>
+  <h2>Sign Up</h2>
 
   {% if error %}
     <p style="color: red;">{{ error }}</p>
@@ -13,9 +13,9 @@
     <input type="email" name="email" placeholder="Email" required><br>
     <input type="text" name="address" placeholder="Address">
     <input type="password" name="password" placeholder="Password" required><br>
-    <button type="submit">Log In</button>
+    <button type="submit">Create an account</button>
   </form>
 
-  <a href="/signup">Need an account?</a><br>
+  <a href="/signup">Already have an account?</a><br>
   <a href="/forgot-password">Forgot your password?</a>
 {% endblock %}

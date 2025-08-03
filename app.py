@@ -22,7 +22,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///compost.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 load_dotenv()  # Load environment variables from .env
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-app.config['SERVER_NAME'] = 'commonrootscomposting.org'
+app.config['SERVER_NAME'] = None
 app.config['PREFERRED_URL_SCHEME'] = 'https'
 
 
